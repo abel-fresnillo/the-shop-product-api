@@ -2,6 +2,8 @@ import { Router, Request, Response, NextFunction } from "express";
 import {
   getProducts,
   getProductById,
+  getProductsByCategory,
+  findProductsByName,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -12,6 +14,27 @@ const router = Router();
 router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
   try {
     res.json(await getProducts());
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/category/:category", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await getProductsByCategory(req.params.category));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/search", async (req: Request, res: Response, next: NextFunction) => {
+  const { name } = req.query;
+  if (!name || typeof name !== "string") {
+    res.status(400).json({ error: "Query parameter 'name' is required" });
+    return;
+  }
+  try {
+    res.json(await findProductsByName(name));
   } catch (err) {
     next(err);
   }

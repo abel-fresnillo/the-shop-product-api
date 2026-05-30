@@ -57,6 +57,14 @@ export async function deleteProduct(id: string): Promise<boolean> {
   return true;
 }
 
+export async function getProductsByCategory(category: string): Promise<Product[]> {
+  return products.filter((p) => p.category === category);
+}
+
+export async function findProductsByName(name: string): Promise<Product[]> {
+  return products.filter((p) => p.name.toLowerCase().includes(name.toLowerCase()));
+}
+
 export async function resetProducts(): Promise<void> {
   products = [...seedProducts];
 }
