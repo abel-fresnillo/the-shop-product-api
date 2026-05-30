@@ -9,20 +9,28 @@ import {
 
 const router = Router();
 
-router.get("/", (_req: Request, res: Response) => {
-  res.json(getProducts());
-});
-
-router.get("/:id", (req: Request, res: Response) => {
-  const product = getProductById(req.params.id);
-  if (!product) {
-    res.status(404).json({ error: "Product not found" });
-    return;
+router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await getProducts());
+  } catch (err) {
+    next(err);
   }
-  res.json(product);
 });
 
-router.post("/", (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const product = await getProductById(req.params.id);
+    if (!product) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   const { name, category, price, unit, stock } = req.body;
 
   if (!name || !category || price === undefined || !unit || stock === undefined) {
@@ -41,14 +49,14 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const product = createProduct({ name, category, price, unit, stock });
+    const product = await createProduct({ name, category, price, unit, stock });
     res.status(201).json(product);
   } catch (err) {
     next(err);
   }
 });
 
-router.patch("/:id", (req: Request, res: Response, next: NextFunction) => {
+router.patch("/:id", async (req: Request, res: Response, next: NextFunction) => {
   const { name, category, price, unit, stock } = req.body;
 
   if (price !== undefined && (typeof price !== "number" || price < 0)) {
@@ -69,7 +77,7 @@ router.patch("/:id", (req: Request, res: Response, next: NextFunction) => {
   if (stock !== undefined) patch.stock = stock;
 
   try {
-    const product = updateProduct(req.params.id, patch);
+    const product = await updateProduct(req.params.id, patch);
     if (!product) {
       res.status(404).json({ error: "Product not found" });
       return;
@@ -80,13 +88,17 @@ router.patch("/:id", (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-router.delete("/:id", (req: Request, res: Response) => {
-  const deleted = deleteProduct(req.params.id);
-  if (!deleted) {
-    res.status(404).json({ error: "Product not found" });
-    return;
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const deleted = await deleteProduct(req.params.id);
+    if (!deleted) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+    res.status(204).send();
+  } catch (err) {
+    next(err);
   }
-  res.status(204).send();
 });
 
 export default router;

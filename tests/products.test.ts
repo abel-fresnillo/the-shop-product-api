@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
+vi.mock("../src/data/products");
 import request from "supertest";
 import app from "../src/app";
 import { resetStore } from "./helpers/setup";
