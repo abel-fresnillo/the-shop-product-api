@@ -9,18 +9,11 @@ export const logger = pino({
     const { traceId, spanId } = span.spanContext();
     return { traceId, spanId };
   },
+  // pino-opentelemetry-transport uses worker threads which are not supported
+  // on Vercel serverless. In development use pino-pretty for readability;
+  // in production write structured JSON to stdout (captured by Vercel logs).
   transport:
     process.env.NODE_ENV === "development"
       ? { target: "pino-pretty" }
-      : process.env.NODE_ENV !== "test"
-        ? {
-            target: "pino-opentelemetry-transport",
-            options: {
-              resourceAttributes: {
-                "service.name":
-                  process.env.OTEL_SERVICE_NAME ?? "the-shop-product-api",
-              },
-            },
-          }
-        : undefined,
+      : undefined,
 });
