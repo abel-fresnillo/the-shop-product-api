@@ -56,7 +56,7 @@ export async function getProductById(
       productLookups.add(1, { operation: "get" });
       if (!rows[0]) {
         productNotFound.add(1, { operation: "get" });
-        logger.warn("Product not found", { productId: id });
+        logger.warn({ productId: id }, "Product not found");
       }
       return rows[0];
     } catch (err) {
@@ -120,7 +120,7 @@ export async function updateProduct(
       span.setAttribute("db.rows_affected", rows.length);
       if (!rows[0]) {
         productNotFound.add(1, { operation: "update" });
-        logger.warn("Product not found for update", { productId: id });
+        logger.warn({ productId: id }, "Product not found for update");
       }
       return rows[0];
     } catch (err) {
@@ -152,7 +152,7 @@ export async function deleteProduct(id: string): Promise<boolean> {
       span.setAttribute("db.rows_affected", rows.length);
       if (rows.length === 0) {
         productNotFound.add(1, { operation: "delete" });
-        logger.warn("Product not found for delete", { productId: id });
+        logger.warn({ productId: id }, "Product not found for delete");
       }
       return rows.length > 0;
     } catch (err) {
