@@ -1,3 +1,5 @@
+import "dotenv/config";
+import "./instrumentation";
 import express, { Request, Response, NextFunction } from "express";
 import productsRouter from "./routes/products";
 import { logger } from "./observability/logger";
