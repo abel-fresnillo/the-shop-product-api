@@ -4,6 +4,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   test: {
     globals: true,
+    env: {
+      PRODUCT_API_KEY: "test-api-key",
+    },
     coverage: {
       provider: "v8",
       exclude: [

@@ -12,6 +12,14 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.headers["x-api-key"] !== process.env.PRODUCT_API_KEY) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  next();
+});
+
 app.use("/api/products", productsRouter);
 
 app.use((_req: Request, res: Response) => {
