@@ -7,9 +7,7 @@ import {
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
-import { SimpleLogRecordProcessor } from "@opentelemetry/sdk-logs";
 import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-node";
 
 const otlpEndpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
@@ -42,11 +40,6 @@ const metricExporter = new OTLPMetricExporter({
   headers: otlpHeaders,
 });
 
-const logExporter = new OTLPLogExporter({
-  url: otlpEndpoint ? `${otlpEndpoint}/v1/logs` : undefined,
-  headers: otlpHeaders,
-});
-
 export const sdk = new NodeSDK({
   resource,
   // SimpleSpanProcessor required for Vercel: process exits before BatchSpanProcessor can flush
@@ -55,8 +48,6 @@ export const sdk = new NodeSDK({
     exporter: metricExporter,
     exportIntervalMillis: 30_000,
   }),
-  // SimpleLogRecordProcessor required for Vercel: process exits before BatchLogRecordProcessor can flush
-  logRecordProcessors: [new SimpleLogRecordProcessor(logExporter)],
   instrumentations: [
     getNodeAutoInstrumentations({
       "@opentelemetry/instrumentation-fs": { enabled: false },
