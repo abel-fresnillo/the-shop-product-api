@@ -19,7 +19,7 @@ app.use((_req: Request, res: Response) => {
 });
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  logger.error(err, "Unhandled error");
+  logger.error("Unhandled error", err);
   res.status(500).json({ error: "Internal server error" });
 });
 
