@@ -76,14 +76,10 @@ jobs:
         with:
           command: monitor
 
-      # Snyk SAST — deferred until local triage is done.
-      # To enable: run `npx snyk code test` locally, review findings,
-      # then uncomment and set --severity-threshold accordingly.
-      #
-      # - name: Snyk SAST — code analysis
-      #   uses: snyk/actions/node@b98d498629f1c5e001abd9ea47a8f8e91f7a26f7
-      #   env:
-      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      #   with:
-      #     command: code test
-      #     args: --severity-threshold=high
+      - name: Snyk SAST — code analysis
+        uses: snyk/actions/node@8e119fbb6c251787721d34ba683ed48eba792766 # master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --severity-threshold=high
