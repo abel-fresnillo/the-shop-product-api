@@ -1,0 +1,5 @@
+# Snyk policy file — commit this to version control.
+# Add ignore rules here with justification and expiry dates.
+version: v1.25.0
+ignore: {}
+patch: {}
