@@ -1,5 +1,19 @@
 import winston from "winston";
-import { OpenTelemetryTransportV3 } from "@opentelemetry/winston-transport";
+import LokiTransport from "winston-loki";
+
+const transports: winston.transport[] = [new winston.transports.Console()];
+
+if (process.env.LOKI_HOST && process.env.NODE_ENV !== "test") {
+  transports.push(
+    new LokiTransport({
+      host: process.env.LOKI_HOST,
+      basicAuth: `${process.env.GRAFANA_INSTANCE_ID}:${process.env.GRAFANA_API_TOKEN}`,
+      labels: { app: "the-shop-product-api" },
+      json: true,
+      format: winston.format.json(),
+    })
+  );
+}
 
 export const logger = winston.createLogger({
   level: process.env.LOG_LEVEL ?? "info",
@@ -10,8 +24,5 @@ export const logger = winston.createLogger({
           winston.format.simple()
         )
       : winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    ...(process.env.NODE_ENV !== "test" ? [new OpenTelemetryTransportV3()] : []),
-  ],
+  transports,
 });
