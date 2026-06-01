@@ -65,9 +65,6 @@ export const sdk = new NodeSDK({
       "@opentelemetry/instrumentation-http": {
         ignoreIncomingRequestHook: (req) => req.url === "/health",
       },
-      "@opentelemetry/instrumentation-winston": {
-        disableLogSending: true,
-      },
     }),
   ],
 });
