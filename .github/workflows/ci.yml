@@ -57,12 +57,12 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Gitleaks secret scan
-        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c # v2.3.9
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Snyk SCA — dependency scan
-        uses: snyk/actions/node@b98d498629f1c5e001abd9ea47a8f8e91f7a26f7
+        uses: snyk/actions/node@8e119fbb6c251787721d34ba683ed48eba792766 # master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Snyk monitor — upload snapshot
         if: github.event_name == 'push' && github.ref == 'refs/heads/development'
-        uses: snyk/actions/node@b98d498629f1c5e001abd9ea47a8f8e91f7a26f7
+        uses: snyk/actions/node@8e119fbb6c251787721d34ba683ed48eba792766 # master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
