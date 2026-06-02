@@ -52,3 +52,44 @@ describe("global error handler", () => {
     expect(res.body.error).toBe("Internal server error");
   });
 });
+
+describe("CORS", () => {
+  it("sets Access-Control-Allow-Origin for an allowed origin", async () => {
+    const res = await request(app)
+      .get("/health")
+      .set("Origin", "https://test-allowed.vercel.app");
+    expect(res.headers["access-control-allow-origin"]).toBe("https://test-allowed.vercel.app");
+  });
+
+  it("sets Access-Control-Allow-Origin for an origin matching the allowed pattern", async () => {
+    const res = await request(app)
+      .get("/health")
+      .set("Origin", "https://preview-abc123-myteam.vercel.app");
+    expect(res.headers["access-control-allow-origin"]).toBe("https://preview-abc123-myteam.vercel.app");
+  });
+
+  it("does not set Access-Control-Allow-Origin for a disallowed origin", async () => {
+    const res = await request(app)
+      .get("/health")
+      .set("Origin", "https://evil.com");
+    expect(res.headers["access-control-allow-origin"]).toBeUndefined();
+  });
+
+  it("responds to preflight with 204 and correct headers for an allowed origin", async () => {
+    const res = await request(app)
+      .options("/api/products")
+      .set("Origin", "https://test-allowed.vercel.app")
+      .set("Access-Control-Request-Method", "GET");
+    expect(res.status).toBe(204);
+    expect(res.headers["access-control-allow-origin"]).toBe("https://test-allowed.vercel.app");
+    expect(res.headers["access-control-allow-methods"]).toContain("GET");
+  });
+
+  it("includes PATCH in Access-Control-Allow-Methods", async () => {
+    const res = await request(app)
+      .options("/api/products/1")
+      .set("Origin", "https://test-allowed.vercel.app")
+      .set("Access-Control-Request-Method", "PATCH");
+    expect(res.headers["access-control-allow-methods"]).toContain("PATCH");
+  });
+});
