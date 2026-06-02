@@ -6,6 +6,8 @@ export default defineConfig({
     globals: true,
     env: {
       PRODUCT_API_KEY: "test-api-key",
+      ALLOWED_ORIGINS: "https://test-allowed.vercel.app",
+      ALLOWED_ORIGIN_PATTERN: "^https://preview-[\\w-]+\\.vercel\\.app$",
     },
     coverage: {
       provider: "v8",

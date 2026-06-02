@@ -10,10 +10,23 @@ import { logger } from "./observability/logger";
 
 const app = express();
 
+const ALLOWED_ORIGINS = new Set(
+  (process.env.ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean)
+);
+const ALLOWED_ORIGIN_PATTERN = process.env.ALLOWED_ORIGIN_PATTERN
+  ? new RegExp(process.env.ALLOWED_ORIGIN_PATTERN)
+  : null;
+
 const corsOptions: cors.CorsOptions = {
-  origin: "https://project-mz5vn.vercel.app",
+  origin: (origin, callback) => {
+    if (!origin || ALLOWED_ORIGINS.has(origin) || ALLOWED_ORIGIN_PATTERN?.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
   allowedHeaders: ["Content-Type", "x-api-key", "Authorization"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 };
 
 app.options("*", cors(corsOptions));
