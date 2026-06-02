@@ -10,7 +10,14 @@ import { logger } from "./observability/logger";
 
 const app = express();
 
-app.use(cors({ origin: "https://project-mz5vn.vercel.app" }));
+const corsOptions: cors.CorsOptions = {
+  origin: "https://project-mz5vn.vercel.app",
+  allowedHeaders: ["Content-Type", "x-api-key", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+};
+
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
 
