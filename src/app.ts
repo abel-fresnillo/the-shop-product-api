@@ -3,12 +3,14 @@ import "./instrumentation";
 import { timingSafeEqual } from "crypto";
 import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
+import cors from "cors";
 import rateLimit from "express-rate-limit";
 import productsRouter from "./routes/products";
 import { logger } from "./observability/logger";
 
 const app = express();
 
+app.use(cors({ origin: "https://project-mz5vn.vercel.app" }));
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
 
