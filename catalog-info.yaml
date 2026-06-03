@@ -1,0 +1,24 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: the-shop-product-api
+  description: REST API that exposes product data for The Shop storefront. Built with TypeScript and Express, deployed to Vercel, and backed by a Neon PostgreSQL database.
+  annotations:
+    github.com/project-slug: abel-fresnillo/the-shop-product-api
+    backstage.io/techdocs-ref: dir:.
+  links:
+    - url: https://github.com/abel-fresnillo/the-shop-product-api/actions/workflows/ci.yml
+      title: CI Workflow
+      icon: github
+    - url: https://github.com/abel-fresnillo/the-shop-product-api/actions/workflows/deploy.yml
+      title: Deploy Workflow
+      icon: github
+    Replace with your actual Grafana dashboard URL
+    - url: https://iscabel.grafana.net/d/is5wqkj
+      title: Grafana Dashboard
+      icon: dashboard
+spec:
+  type: service
+  lifecycle: production
+  owner: user:default/abel-fresnillo
+  system: the-shop
