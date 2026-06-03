@@ -13,7 +13,6 @@ metadata:
     - url: https://github.com/abel-fresnillo/the-shop-product-api/actions/workflows/deploy.yml
       title: Deploy Workflow
       icon: github
-    Replace with your actual Grafana dashboard URL
     - url: https://iscabel.grafana.net/d/is5wqkj
       title: Grafana Dashboard
       icon: dashboard
