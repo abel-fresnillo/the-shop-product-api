@@ -1,0 +1,5 @@
+site_name: The Shop Product API
+nav:
+  - Home: index.md
+plugins:
+  - techdocs-core
