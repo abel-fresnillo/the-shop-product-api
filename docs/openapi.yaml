@@ -1,0 +1,365 @@
+openapi: 3.0.3
+info:
+  title: The Shop Product API
+  description: REST API that exposes product data for The Shop storefront. Built with TypeScript and Express, deployed to Vercel, and backed by a Neon PostgreSQL database.
+  version: 1.0.0
+
+servers:
+  - url: https://project-zcqoo.vercel.app
+    description: Production
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+
+  schemas:
+    Product:
+      type: object
+      required: [id, name, category, price, unit, stock]
+      properties:
+        id:
+          type: string
+          description: Unique product identifier
+          example: "prod_01"
+        name:
+          type: string
+          maxLength: 200
+          example: "Organic Whole Milk"
+        category:
+          type: string
+          maxLength: 100
+          example: "dairy"
+        price:
+          type: number
+          format: double
+          minimum: 0
+          example: 3.99
+        unit:
+          type: string
+          maxLength: 50
+          example: "gallon"
+        stock:
+          type: integer
+          minimum: 0
+          example: 120
+
+    ProductCreate:
+      type: object
+      required: [name, category, price, unit, stock]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "Organic Whole Milk"
+        category:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "dairy"
+        price:
+          type: number
+          format: double
+          minimum: 0
+          example: 3.99
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: "gallon"
+        stock:
+          type: integer
+          minimum: 0
+          example: 120
+
+    ProductPatch:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          type: string
+          minLength: 1
+          maxLength: 100
+        price:
+          type: number
+          format: double
+          minimum: 0
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 50
+        stock:
+          type: integer
+          minimum: 0
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          oneOf:
+            - type: string
+            - type: object
+          description: Error message or field-level validation errors
+
+tags:
+  - name: Health
+    description: Service health
+  - name: Products
+    description: Product catalog operations
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Returns the health status of the API. Does not require authentication.
+      operationId: getHealth
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/products:
+    get:
+      summary: List all products
+      operationId: listProducts
+      tags: [Products]
+      responses:
+        "200":
+          description: Array of all products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Create a product
+      operationId: createProduct
+      tags: [Products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreate"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/products/search:
+    get:
+      summary: Search products by name
+      operationId: searchProducts
+      tags: [Products]
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+          description: Partial or full product name to search for
+          example: milk
+      responses:
+        "200":
+          description: Products matching the name query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "400":
+          description: Missing or invalid name parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/products/category/{category}:
+    get:
+      summary: List products by category
+      operationId: listProductsByCategory
+      tags: [Products]
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Category name to filter by
+          example: dairy
+      responses:
+        "200":
+          description: Products in the specified category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/products/{id}:
+    get:
+      summary: Get a product by ID
+      operationId: getProductById
+      tags: [Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Product ID
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    patch:
+      summary: Partially update a product
+      operationId: patchProduct
+      tags: [Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Product ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductPatch"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Validation error or no fields provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Delete a product
+      operationId: deleteProduct
+      tags: [Products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Product ID
+      responses:
+        "204":
+          description: Product deleted successfully
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

@@ -21,3 +21,20 @@ spec:
   lifecycle: production
   owner: user:default/abel-fresnillo
   system: the-shop
+  providesApis:
+    - the-shop-product-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: the-shop-product-api
+  description: OpenAPI specification for the Product API — product catalog CRUD, search, and category filtering.
+  annotations:
+    github.com/project-slug: abel-fresnillo/the-shop-product-api
+spec:
+  type: openapi
+  lifecycle: production
+  owner: user:default/abel-fresnillo
+  system: the-shop
+  definition:
+    $text: ./docs/openapi.yaml
